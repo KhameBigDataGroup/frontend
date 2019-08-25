@@ -11,14 +11,26 @@
                 <b-col>
                     <b-card sub-title="Last Block Height">
                         <b-card-text :style="{fontSize: '2em'}">
-                            <AnimatedNumber :number="lastBlockHeight" />
+                            <AnimatedNumber :number="lastBlockHeight" v-show="!loading"/>
+                            <b-spinner variant="warning" type="grow" label="Loading" v-if="loading"></b-spinner>
+                        </b-card-text>
+                    </b-card>
+                </b-col>
+                <b-col>
+                    <b-card sub-title="Difficulty">
+                        <b-card-text :style="{fontSize: '2em'}">
+                            <small :style="{fontSize: '0.7em'}">
+                                <AnimatedNumber :number="difficulty" v-show="!loading"/>
+                                <b-spinner variant="warning" type="grow" label="Loading" v-if="loading"></b-spinner>
+                            </small>
                         </b-card-text>
                     </b-card>
                 </b-col>
                 <b-col>
                     <b-card sub-title="Total Transactions">
                         <b-card-text :style="{fontSize: '2em'}">
-                            <AnimatedNumber :number="totalTransactions" />
+                            <AnimatedNumber :number="totalTransactions" v-show="!loading"/>
+                            <b-spinner variant="warning" type="grow" label="Loading" v-if="loading"></b-spinner>
                         </b-card-text>
                     </b-card>
                 </b-col>
@@ -36,23 +48,27 @@
         components: {AnimatedNumber},
         data: () => {
             return {
+                loading: true,
                 lastBlockHeight: 0,
+                difficulty: 0,
                 totalTransactions: 0,
                 timer: '',
             }
         },
         created: function () {
 
-            this.fetchEventsList();
-            this.timer = setInterval(this.fetchEventsList, 10000)
+            this.fetchCharts();
+            this.timer = setInterval(this.fetchCharts, 60000)
 
         },
         methods: {
-            fetchEventsList: function () {
+            fetchCharts: function () {
                 fetch(`${SITE_URL}/bitcoin/get_status`).then(x => x.json())
                     .then(data => {
-                        this.lastBlockHeight = data.lastBlockHeight;
-                        this.totalTransactions = data.totalTransactions;
+                        this.lastBlockHeight = data.blocks;
+                        this.difficulty = data.difficulty;
+                        this.totalTransactions = data.txcount;
+                        this.loading = false;
                     }).catch(err => {
                     console.log(err);
                 });

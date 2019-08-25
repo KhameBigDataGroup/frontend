@@ -13,7 +13,7 @@
 
 </style>
 <script>
-    import Navbar from "./components/Layout/Navbar";
+    import Navbar from "./components/layout/Navbar";
 
     export default {
         components: {Navbar}
